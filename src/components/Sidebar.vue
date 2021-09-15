@@ -71,7 +71,7 @@
           >
             {{ selectedArea }}
           </button>
-          <ul class="dropdown-menu">
+          <ul class="dropdown-menu" v-show="areaList.length > 1">
             <li v-for="(area, index) in areaList" :key="index">
               <a
                 @click="selectedArea = area.value"
@@ -121,8 +121,18 @@
                 ></a>
               </div>
             </div>
-            <span>{{ item.properties.phone }}</span>
-            <span>{{ item.properties.address }}</span>
+            <span>
+              <i class="fas fa-phone-alt"></i>
+              {{ item.properties.phone }}
+            </span>
+            <span>
+              <i class="fas fa-map-marker-alt"></i>
+              {{ item.properties.address }}
+              </span>
+            <span>
+              <i class="fas fa-quote-right"></i>
+              {{ item.properties.note}}
+            </span>
           </div>
           <div class="bottom">
             <span
@@ -224,7 +234,7 @@ export default {
     },
   },
   mounted() {
-    this.day = new Date().getDays;
+    this.day = new Date().getDay();
   },
 };
 </script>
