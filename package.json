@@ -42,7 +42,7 @@
       "parser": "babel-eslint"
     },
     "rules": {
-      "max-len": ["error", { "code": 200 }]
+      "max-len": ["error", { "code": 120 }]
     }
   },
   "browserslist": [

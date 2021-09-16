@@ -1,7 +1,7 @@
 <template>
   <div id="map"></div>
   <a id="sidebar_open" href="#" @click.prevent="open_sidebar">側邊欄</a>
-  <Sidebar ref="sidebar" :result="filter_result" @emit-search="filterData"></Sidebar>
+  <Sidebar ref="sidebar" :result="filter_result" @emit-search="filterData" @locate_pharmacy="locate_pharmacy"></Sidebar>
   <a id="locate_myself" href="#" @click.prevent="locate_myself()">
     <img src="../static/btn_locate.svg" alt="">
   </a>
@@ -16,6 +16,7 @@ import MaskNormal from '../static/normal.svg';
 import Maskless from '../static/less.svg';
 import Maskout from '../static/out.svg';
 import RedIcon from '../static/marker-icon-red.png';
+import card from '@/api/api';
 
 export default {
   name: 'App',
@@ -26,6 +27,7 @@ export default {
       county: '',
       town: '',
       filter_result: [],
+      markers: [],
     };
   },
   methods: {
@@ -67,6 +69,7 @@ export default {
         }
       });
       vm.filter_result = result;
+      vm.markers = [];
       vm.print_mark(result);
     },
     print_mark(list) {
@@ -91,25 +94,27 @@ export default {
         iconUrl: Maskout,
         iconSize: [35, 35],
       });
-      list.forEach((item) => {
+      for (let i = 0; i < list.length; i += 1) {
         let maskStatus = '';
-        if (item.properties.mask_adult > 200) {
+        if (list[i].properties.mask_adult > 200) {
           maskStatus = FullIcon;
-        } else if ((item.properties.mask_adult) > 100 && (item.properties.mask_adult < 200)) {
+        } else if ((list[i].properties.mask_adult) > 100 && (list[i].properties.mask_adult < 200)) {
           maskStatus = NormalIcon;
-        } else if ((item.properties.mask_adult) < 100 && (item.properties.mask_adult > 0)) {
+        } else if ((list[i].properties.mask_adult) < 100 && (list[i].properties.mask_adult > 0)) {
           maskStatus = LessIcon;
         } else {
           maskStatus = OutIcon;
         }
-        const lng = item.geometry.coordinates[0];
-        const lat = item.geometry.coordinates[1];
-        L.marker([lat, lng], { icon: maskStatus }).addTo(this.mapObject)
-          .bindPopup(`<h3>${item.properties.name}</h3>`);
-      });
+        const lng = list[i].geometry.coordinates[0];
+        const lat = list[i].geometry.coordinates[1];
+        const marker = L.marker([lat, lng], { icon: maskStatus });
+        marker.addTo(this.mapObject)
+          .bindPopup(`${card(list[i])}`);
+        this.markers.push(marker);
+      }
     },
     locate_myself() {
-      const FullIcon = new L.Icon({
+      const Icon = new L.Icon({
         iconUrl: RedIcon,
         iconSize: [20, 30],
       });
@@ -120,11 +125,18 @@ export default {
         enableHighAccuracy: true,
         timeout: 10000,
       });
-      const marker = L.marker([0, 0], { icon: FullIcon }).addTo(this.mapObject);
+      const marker = L.marker([0, 0], { icon: Icon }).addTo(this.mapObject);
       function foundHandler(e) {
         marker.setLatLng(e.latlng).bindPopup('<span>媽我在這</span>').openPopup();
+        this.setView([e.latlng.lat, e.latlng.lng, 15]);
       }
       this.mapObject.on('locationfound', foundHandler);
+    },
+    locate_pharmacy(index) {
+      this.markers[index].openPopup();
+      const lng = this.filter_result[index].geometry.coordinates[0];
+      const lat = this.filter_result[index].geometry.coordinates[1];
+      this.mapObject.setView([lat, lng], 15);
     },
     open_sidebar() {
       this.$refs.sidebar.open();

@@ -112,13 +112,12 @@
       <ul class="pharmacy_list">
         <li v-for="(item, index) in result" :key="index">
           <div class="main">
-            <div>
+            <div class="pharmacy_name">
               <h3>{{ item.properties.name }}</h3>
               <div>
-                <a
-                  href="#"
-                  style="background-image: url(./asstes/btn_phone.svg)"
-                ></a>
+                <a class="locate_pharmacy_btn" @click="locate_pharmacy(index)" href="#">
+                  <i class="fas fa-map-marker-alt"></i>
+                </a>
               </div>
             </div>
             <span>
@@ -196,6 +195,9 @@ export default {
     },
     open() {
       this.isShow = true;
+    },
+    locate_pharmacy(index) {
+      this.$emit('locate_pharmacy', index);
     },
   },
   computed: {
@@ -338,10 +340,27 @@ export default {
         display: flex;
         flex-direction: column;
         padding: 1em;
+        .locate_pharmacy_btn {
+          font-size: 20px;
+          line-height: 35px;
+          background: #0ba29c;
+          color:#ffffff;
+          width: 35px;
+          height:35px;
+          border-radius: 50%;
+          display:inline-block;
+          text-align: center;
+        }
+        .pharmacy_name {
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+        }
         h3 {
           font-size: 1.2rem;
           font-weight: bold;
           color:#0ba29c;
+          margin: 0;
         }
       }
       .bottom {
