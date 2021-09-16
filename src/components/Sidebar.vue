@@ -152,7 +152,7 @@
     </div>
     <div class="bottom">
       <h1>口罩地圖</h1>
-      <span class="updtae_msg">最後更新時間</span>
+      <span class="updtae_msg">最後更新時間 : 0 秒前</span>
     </div>
   </div>
 </template>
@@ -273,21 +273,21 @@ export default {
       display: flex;
       flex-direction: column;
       span {
-        color: #00000080;
+        color: var(--color-gray);
         font-size: 1.1rem;
       }
       span:nth-child(1) {
-        color: #0ba29c;
+        color: var(--color-main);
         font-size: 1.5rem;
         font-weight: bold;
       }
       span.days {
-        color: #fbb03b;
+        color: var(--color-yellow);
         font-size: 1.2rem;
       }
     }
     .close_sidebar {
-      color:#00000080;
+      color:var(--color-gray);
       position: absolute;
       top:-5px;
       right:-5px;
@@ -309,11 +309,11 @@ export default {
     }
     .search {
       background-color: transparent;
-      border:1px solid #0ba29c;
-      color:#0ba29c;
+      border:1px solid var(--color-main);
+      color:var(--color-main);
     }
     .search:hover {
-      background: #0ba29c;
+      background: var(--color-main);
       color:#ffffff;
     }
   }
@@ -329,7 +329,7 @@ export default {
       width: 15px;
     }
     &::-webkit-scrollbar-thumb {
-      background: #0ba29c;
+      background: var(--color-main);
       border-radius: 10px;
     }
     li {
@@ -343,7 +343,7 @@ export default {
         .locate_pharmacy_btn {
           font-size: 20px;
           line-height: 35px;
-          background: #0ba29c;
+          background: var(--color-main);
           color:#ffffff;
           width: 35px;
           height:35px;
@@ -359,7 +359,7 @@ export default {
         h3 {
           font-size: 1.2rem;
           font-weight: bold;
-          color:#0ba29c;
+          color:var(--color-main);
           margin: 0;
         }
       }
@@ -384,7 +384,7 @@ export default {
     }
   }
   & > .bottom {
-    background: #0ba29c;
+    background: var(--color-main);
     height: 100px;
     margin: 0 -1em -1em -1em;
     display: flex;

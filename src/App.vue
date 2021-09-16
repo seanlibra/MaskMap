@@ -1,8 +1,8 @@
 <template>
   <div id="map"></div>
-  <a id="sidebar_open" href="#" @click.prevent="open_sidebar">側邊欄</a>
+  <a id="sidebar_open" href="#" @click.prevent="open_sidebar">找口罩</a>
   <Sidebar ref="sidebar" :result="filter_result" @emit-search="filterData" @locate_pharmacy="locate_pharmacy"></Sidebar>
-  <a id="locate_myself" href="#" @click.prevent="locate_myself()">
+  <a id="locate_myself" href="#" @click.prevent="locate_myself">
     <img src="../static/btn_locate.svg" alt="">
   </a>
 </template>
@@ -18,11 +18,12 @@ import Maskout from '../static/out.svg';
 import RedIcon from '../static/marker-icon-red.png';
 import card from '@/api/api';
 
+let mapObj = {};
+
 export default {
   name: 'App',
   data() {
     return {
-      mapObject: '',
       data: [],
       county: '',
       town: '',
@@ -32,16 +33,16 @@ export default {
   },
   methods: {
     initMap() {
-      this.mapObject = L.map('map', {
+      mapObj = L.map('map', {
         center: [25.042474, 121.513729],
         zoom: 18,
       });
       L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
         attribution:
         // eslint-disable-next-line max-len
-        'Map data &copy; <a href="https://www.openstreetmap.org/">OpenStreetMap</a> contributors, <a href="https://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>, Imagery © <a href="https://www.mapbox.com/">Mapbox</a>',
+        'MaskMap &copy; Code: <a href="https://creativecommons.org/licenses/by-sa/2.0/">Sean</a>, Design <a target="_blank" href="https://www.behance.net/gallery/93048833/UIUX-?tracking_source=for_you_feed_user_published">K.T</a>',
         maxZoom: 20,
-      }).addTo(this.mapObject);
+      }).addTo(mapObj);
     },
     getData() {
       const vm = this;
@@ -51,9 +52,9 @@ export default {
       });
     },
     filterData(searchData) {
-      this.county = searchData.city;
-      this.town = searchData.area;
       const vm = this;
+      vm.county = searchData.city;
+      vm.town = searchData.area;
       const result = [];
       const NowTown = vm.town;
       const NowCounty = vm.county;
@@ -73,9 +74,9 @@ export default {
       vm.print_mark(result);
     },
     print_mark(list) {
-      this.mapObject.eachLayer((layer) => {
+      mapObj.eachLayer((layer) => {
         if (layer instanceof L.Marker) {
-          this.mapObject.removeLayer(layer);
+          mapObj.removeLayer(layer);
         }
       });
       const FullIcon = new L.Icon({
@@ -108,8 +109,7 @@ export default {
         const lng = list[i].geometry.coordinates[0];
         const lat = list[i].geometry.coordinates[1];
         const marker = L.marker([lat, lng], { icon: maskStatus });
-        marker.addTo(this.mapObject)
-          .bindPopup(`${card(list[i])}`);
+        marker.addTo(mapObj).bindPopup(`${card(list[i])}`);
         this.markers.push(marker);
       }
     },
@@ -118,25 +118,25 @@ export default {
         iconUrl: RedIcon,
         iconSize: [20, 30],
       });
-      this.mapObject.locate({
+      mapObj.locate({
         setView: true,
         watch: false,
         maxZoom: 20,
         enableHighAccuracy: true,
         timeout: 10000,
       });
-      const marker = L.marker([0, 0], { icon: Icon }).addTo(this.mapObject);
+      const marker = L.marker([0, 0], { icon: Icon }).addTo(mapObj);
       function foundHandler(e) {
         marker.setLatLng(e.latlng).bindPopup('<span>媽我在這</span>').openPopup();
         this.setView([e.latlng.lat, e.latlng.lng, 15]);
       }
-      this.mapObject.on('locationfound', foundHandler);
+      mapObj.on('locationfound', foundHandler);
     },
     locate_pharmacy(index) {
       this.markers[index].openPopup();
       const lng = this.filter_result[index].geometry.coordinates[0];
       const lat = this.filter_result[index].geometry.coordinates[1];
-      this.mapObject.setView([lat, lng], 15);
+      mapObj.setView([lat, lng], 15);
     },
     open_sidebar() {
       this.$refs.sidebar.open();
@@ -153,6 +153,12 @@ export default {
 </script>
 
 <style lang="scss">
+:root {
+  --color-main:#0BA29C;
+  --color-yellow:#FBB03B;
+  --color-red:#D4145A;
+  --color-gary:#0000008b;
+}
 @import './assets/scss/all';
 #map {
   height:100vh;
@@ -164,7 +170,7 @@ export default {
   color:#ffffff;
   padding: 10px;
   text-decoration: none;
-  background: #0BA29c;
+  background-color: var(--color-main);
   z-index: 999;
   writing-mode: vertical-lr;
   letter-spacing: 1px;
