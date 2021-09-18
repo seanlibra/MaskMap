@@ -267,7 +267,6 @@ export default {
     align-items: center;
     justify-content: space-between;
     margin-bottom: 20px;
-    height: 135px;
     .profile {
       flex-grow: 1;
       text-align: center;
@@ -301,7 +300,7 @@ export default {
     }
   }
   .content {
-    height: calc(100vh - 235px);
+    height:calc(100vh - 241px);
     .select_group {
       display: flex;
       justify-content: space-between;
@@ -341,7 +340,7 @@ export default {
       }
     }
     .pharmacy_list {
-      height: calc(100vh - 235px);
+      height:100%;
       overflow-y: auto;
       list-style: none;
       margin: 0;
@@ -408,7 +407,7 @@ export default {
   }
   & > .bottom {
     background: var(--color-main);
-    height: 100px;
+    height:70px;
     margin: 0 -1em -1em -1em;
     display: flex;
     align-items: center;
