@@ -51,7 +51,7 @@
           >
             {{ selectedCity }}
           </button>
-          <ul class="dropdown-menu">
+          <ul class="dropdown-menu custom_dropmenu">
             <li v-for="(city, index) in cityList" :key="index">
               <a
                 class="dropdown-item"
@@ -71,7 +71,7 @@
           >
             {{ selectedArea }}
           </button>
-          <ul class="dropdown-menu" v-show="areaList.length > 1">
+          <ul class="dropdown-menu custom_dropmenu" v-show="areaList.length > 1">
             <li v-for="(area, index) in areaList" :key="index">
               <a
                 @click="selectedArea = area.value"
@@ -158,7 +158,7 @@
 </template>
 
 <script>
-import cityCountyData from '@/assets/cityCountyData.json';
+import cityCountyData from '@/assets/data/cityCountyData.json';
 
 export default {
   props: {
@@ -197,6 +197,7 @@ export default {
       this.isShow = true;
     },
     locate_pharmacy(index) {
+      this.isShow = false;
       this.$emit('locate_pharmacy', index);
     },
   },
@@ -244,10 +245,11 @@ export default {
 <!-- Add "scoped" attribute to limit CSS to this component only -->
 <style scoped lang="scss">
 #sidebar {
+  font-family: 'Noto Sans TC', sans-serif;
   position: fixed !important;
   top: 0;
   bottom: 0;
-  left:-400px;
+  left: -400px;
   width: 400px;
   background: #f8f9fa;
   z-index: 1100;
@@ -255,9 +257,9 @@ export default {
   padding: 1rem;
   display: flex;
   flex-direction: column;
-  transition: all .3s;
+  transition: all 0.3s;
   &.active {
-    left:0px;
+    left: 0px;
   }
   .header {
     position: relative;
@@ -265,6 +267,7 @@ export default {
     align-items: center;
     justify-content: space-between;
     margin-bottom: 20px;
+    height: 135px;
     .profile {
       flex-grow: 1;
       text-align: center;
@@ -287,99 +290,119 @@ export default {
       }
     }
     .close_sidebar {
-      color:var(--color-gray);
+      color: var(--color-gray);
       position: absolute;
-      top:-5px;
-      right:-5px;
+      top: -5px;
+      right: -5px;
       svg {
-        width:25px;
-        height:25px;
+        width: 25px;
+        height: 25px;
       }
     }
   }
-  .select_group {
-    display: flex;
-    justify-content: space-between;
-    margin-bottom: 20px;
-    .btn-group {
-      width: 40%;
-      .btn {
+  .content {
+    height: calc(100vh - 235px);
+    .select_group {
+      display: flex;
+      justify-content: space-between;
+      margin-bottom: 20px;
+      .btn-group {
+        width: 40%;
+        .custom_dropmenu {
+          overflow-y: auto;
+          max-height: 400px;
+          min-width: auto;
+          width: 100%;
+          &::-webkit-scrollbar {
+           width: 10px;
+          }
+          &::-webkit-scrollbar-thumb {
+            background: var(--color-main);
+          }
+          a {
+            transition: all .3s;
+          }
+          a:hover{
+            background: rgba(11, 162, 156, 0.3);
+          }
+        }
+        .btn {
+          color: #ffffff;
+        }
+      }
+      .search {
+        background-color: transparent;
+        border: 1px solid var(--color-main);
+        color: var(--color-main);
+      }
+      .search:hover {
+        background: var(--color-main);
         color: #ffffff;
       }
     }
-    .search {
-      background-color: transparent;
-      border:1px solid var(--color-main);
-      color:var(--color-main);
-    }
-    .search:hover {
-      background: var(--color-main);
-      color:#ffffff;
-    }
-  }
-  .pharmacy_list {
-    height:800px;
-    max-height:800px;
-    overflow-y:auto;
-    list-style: none;
-    margin: 0;
-    margin-right: -1em;
-    padding: 10px;
-    &::-webkit-scrollbar {
-      width: 15px;
-    }
-    &::-webkit-scrollbar-thumb {
-      background: var(--color-main);
-      border-radius: 10px;
-    }
-    li {
-      margin-bottom: 50px;
-      box-shadow: 0px 3px 6px #0000004B;
-      border-radius: 14px;
-      .main {
-        display: flex;
-        flex-direction: column;
-        padding: 1em;
-        .locate_pharmacy_btn {
-          font-size: 20px;
-          line-height: 35px;
-          background: var(--color-main);
-          color:#ffffff;
-          width: 35px;
-          height:35px;
-          border-radius: 50%;
-          display:inline-block;
-          text-align: center;
-        }
-        .pharmacy_name {
-          display: flex;
-          justify-content: space-between;
-          align-items: center;
-        }
-        h3 {
-          font-size: 1.2rem;
-          font-weight: bold;
-          color:var(--color-main);
-          margin: 0;
-        }
+    .pharmacy_list {
+      height: calc(100vh - 235px);
+      overflow-y: auto;
+      list-style: none;
+      margin: 0;
+      margin-right: -1em;
+      padding: 10px;
+      &::-webkit-scrollbar {
+        width: 15px;
       }
-      .bottom {
-       display: flex;
-       span {
-         width: 50%;
-         padding: 1em;
-         color:#ffffff;
-         line-height: 1rem;
-         font-size: 1rem;
-         text-align: center;
-       }
-       span:first-child {
-         border-bottom-left-radius: 14px;
-         border-right: 1px solid #00000080;
-       }
-       span:last-child {
-         border-bottom-right-radius: 14px;
-       }
+      &::-webkit-scrollbar-thumb {
+        background: var(--color-main);
+        border-radius: 10px;
+      }
+      li {
+        margin-bottom: 50px;
+        box-shadow: 0px 3px 6px #0000004b;
+        border-radius: 14px;
+        .main {
+          display: flex;
+          flex-direction: column;
+          padding: 1em;
+          .locate_pharmacy_btn {
+            font-size: 20px;
+            line-height: 35px;
+            background: var(--color-main);
+            color: #ffffff;
+            width: 35px;
+            height: 35px;
+            border-radius: 50%;
+            display: inline-block;
+            text-align: center;
+          }
+          .pharmacy_name {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+          }
+          h3 {
+            font-size: 1.2rem;
+            font-weight: bold;
+            color: var(--color-main);
+            margin: 0;
+          }
+        }
+        .bottom {
+          display: flex;
+          span {
+            width: 50%;
+            padding: 1em;
+            color: #ffffff;
+            line-height: 1rem;
+            font-size: 1rem;
+            text-align: center;
+          }
+          span:first-child {
+            border-bottom-left-radius: 14px;
+            border-right: 1px solid #00000080;
+          }
+          span:last-child {
+            border-bottom-right-radius: 14px;
+          }
+        }
       }
     }
   }
@@ -390,8 +413,9 @@ export default {
     display: flex;
     align-items: center;
     padding: 0 10px;
+    z-index: 9;
     h1 {
-      color:#ffffff;
+      color: #ffffff;
       font-size: 1.5rem;
       margin: 0;
       margin-right: 20px;
@@ -399,8 +423,14 @@ export default {
     }
     .updtae_msg {
       font-size: 1rem;
-      color:#ffffff;
+      color: #ffffff;
     }
+  }
+}
+@media (max-width:414px) {
+  #sidebar {
+    width: 100%;
+    left:-100%;
   }
 }
 </style>

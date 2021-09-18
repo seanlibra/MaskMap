@@ -3,19 +3,23 @@
   <a id="sidebar_open" href="#" @click.prevent="open_sidebar">找口罩</a>
   <Sidebar ref="sidebar" :result="filter_result" @emit-search="filterData" @locate_pharmacy="locate_pharmacy"></Sidebar>
   <a id="locate_myself" href="#" @click.prevent="locate_myself">
-    <img src="../static/btn_locate.svg" alt="">
+    <img src="@/assets/btn_locate.svg" alt="">
   </a>
+  <transition name="preloader">
+    <Preloader v-if="preloader"></Preloader>
+  </transition>
 </template>
 
 <script>
 
 import L from 'leaflet';
 import Sidebar from '@/components/Sidebar.vue';
-import MaskFull from '../static/full.svg';
-import MaskNormal from '../static/normal.svg';
-import Maskless from '../static/less.svg';
-import Maskout from '../static/out.svg';
-import RedIcon from '../static/marker-icon-red.png';
+import Preloader from '@/components/Preloader.vue';
+import MaskFull from '@/assets/full.svg';
+import MaskNormal from '@/assets/normal.svg';
+import Maskless from '@/assets/less.svg';
+import Maskout from '@/assets/out.svg';
+import RedIcon from '@/assets/marker-icon-red.png';
 import card from '@/api/api';
 
 let mapObj = {};
@@ -29,6 +33,7 @@ export default {
       town: '',
       filter_result: [],
       markers: [],
+      preloader: true,
     };
   },
   methods: {
@@ -40,7 +45,7 @@ export default {
       L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
         attribution:
         // eslint-disable-next-line max-len
-        'MaskMap &copy; Code: <a href="https://creativecommons.org/licenses/by-sa/2.0/">Sean</a>, Design <a target="_blank" href="https://www.behance.net/gallery/93048833/UIUX-?tracking_source=for_you_feed_user_published">K.T</a>',
+        'MaskMap &copy; Code: <a href="https://github.com/seanlibra">Sean</a>, Design <a target="_blank" href="https://www.behance.net/gallery/93048833/UIUX-?tracking_source=for_you_feed_user_published">K.T</a>',
         maxZoom: 20,
       }).addTo(mapObj);
     },
@@ -48,6 +53,9 @@ export default {
       const vm = this;
       const api = 'https://raw.githubusercontent.com/kiang/pharmacies/master/json/points.json';
       vm.$http.get(api).then((res) => {
+        if (res.status === 200) {
+          setTimeout(() => { vm.preloader = false; }, 2000);
+        }
         vm.data = res.data.features;
       });
     },
@@ -112,6 +120,9 @@ export default {
         marker.addTo(mapObj).bindPopup(`${card(list[i])}`);
         this.markers.push(marker);
       }
+      mapObj.on('layerPoint', (ev) => {
+        console.log(ev); // ev is an event object (MouseEvent in this case)
+      });
     },
     locate_myself() {
       const Icon = new L.Icon({
@@ -147,23 +158,25 @@ export default {
     this.getData();
   },
   components: {
-    Sidebar,
+    Sidebar, Preloader,
   },
 };
 </script>
 
 <style lang="scss">
+@import './assets/scss/all';
 :root {
   --color-main:#0BA29C;
   --color-yellow:#FBB03B;
   --color-red:#D4145A;
   --color-gary:#0000008b;
 }
-@import './assets/scss/all';
 #map {
   height:100vh;
+  font-family: 'Noto Sans TC', sans-serif;
 }
 #sidebar_open {
+  font-family: 'Noto Sans TC', sans-serif;
   position: absolute;
   left:0;
   top:100px;
@@ -180,12 +193,18 @@ export default {
 #locate_myself {
   transition: all .3s;
   position: absolute;
-  top:50px;
-  right: 50px;
+  top:25px;
+  right: 25px;
   z-index: 999;
   opacity: 0.7;
+  &:hover {
+    opacity: 1;
+  }
 }
-#locate_myself:hover {
-  opacity: 1;
+.preloader-enter-active, .preloader-leave-active {
+  transition: opacity 1s;
+}
+.preloader-enter, .preloader-leave-to {
+  opacity: 0;
 }
 </style>
